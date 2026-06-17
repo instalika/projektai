@@ -51,17 +51,13 @@ Jei kompiuteris pats išsijungia (pvz. `192.168.0.97`) ir reikia vėl įjungti r
 
 ## Home Assistant serveris (192.168.0.97)
 
-Jei **HA serveris** išsijungia ir reikia vėl įjungti rankiniu būdu:
+**Cursor negali prisijungti** prie jūsų HA iš debesies. Paleiskite patys (viena eilutė SSH):
 
 ```bash
-# Iš LAN (telefonas/PC tame pačiame tinkle):
-bash scripts/ha-remote-probe.sh 192.168.0.97
-
-# Ant serverio (SSH):
-bash scripts/ha-server-diagnose.sh
+curl -fsSL "https://raw.githubusercontent.com/instalika/projektai/cursor/shutdown-diagnostics-3ac6/scripts/ha-run-now.sh" | bash
 ```
 
-Pilnos išvados: [HA serverio diagnostika](docs/ha-serveris-192.168.0.97.md)
+Instrukcija: [ha-paleisti-dabar.md](docs/ha-paleisti-dabar.md) | Išvados: [ha-serveris-192.168.0.97.md](docs/ha-serveris-192.168.0.97.md)
 
 ---
 
