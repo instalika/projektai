@@ -49,6 +49,16 @@ python -m apsa_power --web
 
 Jei kompiuteris pats išsijungia (pvz. `192.168.0.97`) ir reikia vėl įjungti rankiniu būdu – **Instalika Power jo neišjungia** (tik WoL įjungimas). Žiūrėkite [išjungimo diagnostiką](docs/issijungimo-diagnostika.md) ir paleiskite `scripts/diagnose-shutdown.ps1` ant Windows PC.
 
+## Temperatūros ir kompiuterio būsena
+
+BIOS duomenis ir temperatūras galima nuskaityti **tik ant pačio PC** (ne iš debesies):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\hardware-status.ps1
+```
+
+Detalės: [kompiuterio būsena](docs/kompiuterio-busena.md)
+
 ---
 
 **Instalika Power** – IT sprendimai | instalika.eu
