@@ -45,6 +45,10 @@ python -m apsa_power --web
 | Wake on Magic Packet | Tinklo plokštė |
 | Ethernet laidas | Wi-Fi PC nepalaiko WoL |
 
+## Netikėtas išsijungimas?
+
+Jei kompiuteris pats išsijungia (pvz. `192.168.0.97`) ir reikia vėl įjungti rankiniu būdu – **Instalika Power jo neišjungia** (tik WoL įjungimas). Žiūrėkite [išjungimo diagnostiką](docs/issijungimo-diagnostika.md) ir paleiskite `scripts/diagnose-shutdown.ps1` ant Windows PC.
+
 ---
 
 **Instalika Power** – IT sprendimai | instalika.eu
