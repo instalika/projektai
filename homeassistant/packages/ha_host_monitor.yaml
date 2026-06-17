@@ -7,7 +7,7 @@ command_line:
   - sensor:
       name: "HA Host metrikos"
       unique_id: ha_host_metrics_json
-      command: "bash /config/scripts/ha-host-metrics.sh json"
+      command: "bash /config/ha-host-metrics.sh json"
       scan_interval: 30
       value_template: "{{ value_json.cpu_usage | float(0) }}"
       unit_of_measurement: "%"
@@ -35,10 +35,7 @@ template:
         unit_of_measurement: "°C"
         device_class: temperature
         state_class: measurement
-        state: >
-          {% set v = state_attr('sensor.ha_host_metrikos', 'cpu_temp') %}
-          {{ v if v is not none and v != 'null' else 'unknown' }}
-        availability: "{{ state_attr('sensor.ha_host_metrikos', 'cpu_temp') is not none }}"
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'cpu_temp') | float(0) }}"
 
       - name: "HA Host CPU naudojimas"
         unique_id: ha_host_cpu_naudojimas
@@ -104,7 +101,7 @@ template:
         state_class: measurement
         state: >
           {% set v = state_attr('sensor.ha_host_metrikos', 'fan_rpm') %}
-          {{ v if v is not none and v != 'null' else 'unknown' }}
+          {{ v if v is not none else 'unknown' }}
 
       - name: "HA Host IP"
         unique_id: ha_host_ip
@@ -113,21 +110,18 @@ template:
       - name: "HA Host būsena santrauka"
         unique_id: ha_host_busena_santrauka
         state: >
-          {% set t = states('sensor.ha_host_cpu_temperatura') | float(0) %}
-          {% set c = states('sensor.ha_host_cpu_naudojimas') | float(0) %}
-          {% set r = states('sensor.ha_host_ram_naudojimas') | float(0) %}
-          CPU {{ c | round(0) }}% | RAM {{ r | round(0) }}% | {% if t > 0 %}T {{ t }}°C{% else %}T ?{% endif %}
+          CPU {{ state_attr('sensor.ha_host_metrikos', 'cpu_usage') | float(0) | round(0) }}% |
+          RAM {{ state_attr('sensor.ha_host_metrikos', 'ram_pct') | float(0) | round(0) }}% |
+          T {{ state_attr('sensor.ha_host_metrikos', 'cpu_temp') | float(0) }}°C
 
   - binary_sensor:
       - name: "HA Host perkaitimas"
         unique_id: ha_host_perkaitimas
         device_class: heat
-        state: >
-          {{ states('sensor.ha_host_cpu_temperatura') | float(0) > 80 }}
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'cpu_temp') | float(0) > 80 }}"
       - name: "HA Host RAM kritinė"
         unique_id: ha_host_ram_kritine
-        state: >
-          {{ states('sensor.ha_host_ram_naudojimas') | float(0) > 90 }}
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'ram_pct') | float(0) > 90 }}"
 
 # Statistiniai sensoriai (vidurkiai grafikams)
 sensor:
