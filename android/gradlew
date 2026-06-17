@@ -1,0 +1,14 @@
+#!/bin/sh
+# Gradle wrapper script placeholder – Android Studio regenerates this on sync.
+# Build with Android Studio: File → Open → android/
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+WRAPPER_JAR="$DIR/gradle/wrapper/gradle-wrapper.jar"
+
+if [ ! -f "$WRAPPER_JAR" ]; then
+    echo "Atidarykite projektą Android Studio – ji atsisiųs Gradle wrapper."
+    echo "Arba paleiskite: cd android && gradle wrapper"
+    exit 1
+fi
+
+exec java -jar "$WRAPPER_JAR" "$@"

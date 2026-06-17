@@ -22,6 +22,14 @@ chmod +x apsa-power.sh
 
 Atidarykite naršyklėje: **http://localhost:8080**
 
+### Android programėlė
+
+1. Atidarykite `android/` aplanką **Android Studio**
+2. Paleiskite ant telefono arba emuliatoriaus
+3. Pridėkite kompiuterius ir spauskite **Įjungti**
+
+Detalės: [android/README.md](android/README.md)
+
 ### Komandinė eilutė
 
 ```bash
@@ -106,10 +114,8 @@ wake("AA:BB:CC:DD:EE:FF", ip_address="192.168.1.255")
 ## Failų struktūra
 
 ```
-apsa_power/          # Pagrindinis paketas
-  cli.py             # Komandinė eilutė
-  web.py             # Web valdymo panelė
-  wake.py            # Magic packet logika
+apsa_power/          # Python paketas (PC / serveris)
+android/             # Android programėlė (Kotlin + Compose)
 apsa-power.bat       # Windows paleidimas
 apsa-power.sh        # Linux paleidimas
 computers.json       # Jūsų kompiuterių sąrašas
