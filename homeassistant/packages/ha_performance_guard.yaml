@@ -4,7 +4,7 @@
 
 shell_command:
   # Veikia jei HA core turi prieigą prie /addon_configs (dažniausiai per SSH diegimą)
-  frigate_optimize_local: python3 /config/scripts/frigate-optimize-local.py --quiet
+  frigate_optimize_local: python3 /config/frigate-optimize-local.py --quiet
 
 script:
   performance_guard_voice_addons_stop:

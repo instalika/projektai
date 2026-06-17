@@ -284,16 +284,16 @@ def main() -> int:
     retry("upload configuration.yaml", lambda: fe_upload(ingress, session, "configuration.yaml", cfg))
     print("✓ configuration.yaml")
 
-    for rel in [
-        "packages/ha_host_monitor.yaml",
-        "packages/ha_performance.yaml",
-        "packages/ha_performance_guard.yaml",
-        "scripts/frigate-optimize-local.py",
-        "scripts/ha-host-metrics.sh",
-    ]:
-        local = REPO / "homeassistant" / rel
-        retry(f"upload {rel}", lambda p=rel, l=local: fe_upload(ingress, session, p, l.read_text()))
-        print(f"✓ {rel}")
+    uploads = [
+        ("packages/ha_host_monitor.yaml", REPO / "homeassistant/packages/ha_host_monitor.yaml"),
+        ("packages/ha_performance.yaml", REPO / "homeassistant/packages/ha_performance.yaml"),
+        ("packages/ha_performance_guard.yaml", REPO / "homeassistant/packages/ha_performance_guard.yaml"),
+        ("ha-host-metrics.sh", REPO / "homeassistant/scripts/ha-host-metrics.sh"),
+        ("frigate-optimize-local.py", REPO / "homeassistant/scripts/frigate-optimize-local.py"),
+    ]
+    for remote, local in uploads:
+        retry(f"upload {remote}", lambda r=remote, l=local: fe_upload(ingress, session, r, l.read_text()))
+        print(f"✓ {remote}")
 
     try:
         frigate_cfg = fe_download(ingress, session, FRIGATE_CONFIG)
