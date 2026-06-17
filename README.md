@@ -1,1 +1,64 @@
-# projektai
+# Instalika Power
+
+**Kompiuterių įjungimas per LAN** – Wake-on-LAN (WoL) įrankis nuo **Instalika**.
+
+| Platforma | Kaip paleisti |
+|-----------|---------------|
+| **Android** | Atidarykite `android/` Android Studio → Run |
+| **Web panelė** | `apsa-power.bat` arba `python -m apsa_power --web` |
+| **Komandinė eilutė** | `python -m apsa_power biuro-pc` |
+
+## Android (Instalika Power v1.1)
+
+- Įjungti vieną ar **visus** kompiuterius
+- Magic packet **pakartojimai** (patikimumui)
+- Auto **broadcast** iš Wi-Fi
+- **Importas/eksportas** JSON
+
+Detalės: [android/README.md](android/README.md)
+
+## PC greitas startas
+
+```bash
+cp computers.json.example computers.json
+python -m apsa_power --web
+# http://localhost:8080
+```
+
+## Kompiuterių konfigūracija
+
+```json
+{
+  "biuro-pc": {
+    "mac": "AA:BB:CC:DD:EE:FF",
+    "broadcast": "192.168.1.255",
+    "description": "Biuro PC"
+  }
+}
+```
+
+## PC reikalavimai
+
+| Nustatymas | Kur |
+|------------|-----|
+| Wake on LAN | BIOS |
+| Wake on Magic Packet | Tinklo plokštė |
+| Ethernet laidas | Wi-Fi PC nepalaiko WoL |
+
+## Netikėtas išsijungimas?
+
+Jei kompiuteris pats išsijungia (pvz. `192.168.0.97`) ir reikia vėl įjungti rankiniu būdu – **Instalika Power jo neišjungia** (tik WoL įjungimas). Žiūrėkite [išjungimo diagnostiką](docs/issijungimo-diagnostika.md) ir paleiskite `scripts/diagnose-shutdown.ps1` ant Windows PC.
+
+## Home Assistant serveris (192.168.0.97)
+
+**Cursor negali prisijungti** prie jūsų HA iš debesies. Paleiskite patys (viena eilutė SSH):
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/instalika/projektai/cursor/shutdown-diagnostics-3ac6/scripts/ha-run-now.sh" | bash
+```
+
+Instrukcija: [ha-paleisti-dabar.md](docs/ha-paleisti-dabar.md) | Išvados: [ha-serveris-192.168.0.97.md](docs/ha-serveris-192.168.0.97.md)
+
+---
+
+**Instalika Power** – IT sprendimai | instalika.eu
