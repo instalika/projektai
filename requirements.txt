@@ -1,0 +1,1 @@
+# Standartinė Python biblioteka pakanka – papildomų priklausomybių nereikia.
