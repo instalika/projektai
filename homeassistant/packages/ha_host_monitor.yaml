@@ -1,0 +1,168 @@
+# =============================================================================
+# HA Host monitorius – Home Assistant OS (192.168.0.97)
+# Įdiegimas: žr. docs/ha-host-monitor.md
+# =============================================================================
+
+command_line:
+  - sensor:
+      name: "HA Host metrikos"
+      unique_id: ha_host_metrics_json
+      command: "bash /config/scripts/ha-host-metrics.sh json"
+      scan_interval: 30
+      value_template: "{{ value_json.cpu_usage | float(0) }}"
+      unit_of_measurement: "%"
+      json_attributes:
+        - cpu_temp
+        - cpu_usage
+        - ram_pct
+        - ram_used_mb
+        - ram_total_mb
+        - disk_pct
+        - disk_free_gb
+        - disk_total_gb
+        - disk_used_gb
+        - load_1
+        - load_5
+        - load_15
+        - uptime_h
+        - fan_rpm
+        - ip
+
+template:
+  - sensor:
+      - name: "HA Host CPU temperatura"
+        unique_id: ha_host_cpu_temperatura
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set v = state_attr('sensor.ha_host_metrikos', 'cpu_temp') %}
+          {{ v if v is not none and v != 'null' else 'unknown' }}
+        availability: "{{ state_attr('sensor.ha_host_metrikos', 'cpu_temp') is not none }}"
+
+      - name: "HA Host CPU naudojimas"
+        unique_id: ha_host_cpu_naudojimas
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'cpu_usage') | float(0) }}"
+
+      - name: "HA Host RAM naudojimas"
+        unique_id: ha_host_ram_naudojimas
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'ram_pct') | float(0) }}"
+
+      - name: "HA Host RAM naudota"
+        unique_id: ha_host_ram_naudota
+        unit_of_measurement: "MB"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'ram_used_mb') | float(0) | round(0) }}"
+
+      - name: "HA Host RAM viso"
+        unique_id: ha_host_ram_viso
+        unit_of_measurement: "MB"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'ram_total_mb') | float(0) | round(0) }}"
+
+      - name: "HA Host diskas naudojimas"
+        unique_id: ha_host_disk_naudojimas
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'disk_pct') | float(0) }}"
+
+      - name: "HA Host diskas laisva"
+        unique_id: ha_host_disk_laisva
+        unit_of_measurement: "GB"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'disk_free_gb') | float(0) | round(1) }}"
+
+      - name: "HA Host diskas viso"
+        unique_id: ha_host_disk_viso
+        unit_of_measurement: "GB"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'disk_total_gb') | float(0) | round(1) }}"
+
+      - name: "HA Host apkrova 1 min"
+        unique_id: ha_host_apkrova_1min
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'load_1') }}"
+
+      - name: "HA Host apkrova 5 min"
+        unique_id: ha_host_apkrova_5min
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'load_5') }}"
+
+      - name: "HA Host veikimo laikas"
+        unique_id: ha_host_veikimo_laikas
+        unit_of_measurement: "h"
+        state_class: measurement
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'uptime_h') | float(0) | round(1) }}"
+
+      - name: "HA Host ventiliatorius"
+        unique_id: ha_host_ventiliatorius_rpm
+        unit_of_measurement: "RPM"
+        state_class: measurement
+        state: >
+          {% set v = state_attr('sensor.ha_host_metrikos', 'fan_rpm') %}
+          {{ v if v is not none and v != 'null' else 'unknown' }}
+
+      - name: "HA Host IP"
+        unique_id: ha_host_ip
+        state: "{{ state_attr('sensor.ha_host_metrikos', 'ip') | default('192.168.0.97') }}"
+
+      - name: "HA Host būsena santrauka"
+        unique_id: ha_host_busena_santrauka
+        state: >
+          {% set t = states('sensor.ha_host_cpu_temperatura') | float(0) %}
+          {% set c = states('sensor.ha_host_cpu_naudojimas') | float(0) %}
+          {% set r = states('sensor.ha_host_ram_naudojimas') | float(0) %}
+          CPU {{ c | round(0) }}% | RAM {{ r | round(0) }}% | {% if t > 0 %}T {{ t }}°C{% else %}T ?{% endif %}
+
+  - binary_sensor:
+      - name: "HA Host perkaitimas"
+        unique_id: ha_host_perkaitimas
+        device_class: heat
+        state: >
+          {{ states('sensor.ha_host_cpu_temperatura') | float(0) > 80 }}
+      - name: "HA Host RAM kritinė"
+        unique_id: ha_host_ram_kritine
+        state: >
+          {{ states('sensor.ha_host_ram_naudojimas') | float(0) > 90 }}
+
+# Statistiniai sensoriai (vidurkiai grafikams)
+sensor:
+  - platform: statistics
+    name: "HA Host CPU vidurkis 24h"
+    unique_id: ha_host_cpu_vidurkis_24h
+    entity_id: sensor.ha_host_cpu_naudojimas
+    state_characteristic: mean
+    max_age:
+      hours: 24
+  - platform: statistics
+    name: "HA Host RAM vidurkis 24h"
+    unique_id: ha_host_ram_vidurkis_24h
+    entity_id: sensor.ha_host_ram_naudojimas
+    state_characteristic: mean
+    max_age:
+      hours: 24
+  - platform: statistics
+    name: "HA Host temperatūra vidurkis 24h"
+    unique_id: ha_host_temp_vidurkis_24h
+    entity_id: sensor.ha_host_cpu_temperatura
+    state_characteristic: mean
+    max_age:
+      hours: 24
+
+input_button:
+  ha_host_atnaujinti:
+    name: "HA Host atnaujinti metrikas"
+    icon: mdi:refresh
+
+script:
+  ha_host_atnaujinti_metrikas:
+    alias: "HA Host – atnaujinti metrikas"
+    mode: single
+    sequence:
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.ha_host_metrikos

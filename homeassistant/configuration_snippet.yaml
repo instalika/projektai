@@ -1,0 +1,16 @@
+# Pridėkite į configuration.yaml:
+
+homeassistant:
+  packages: !include_dir_named packages
+
+lovelace:
+  mode: storage
+  dashboards:
+    ha-host-dashboard:
+      mode: yaml
+      title: HA Serveris
+      icon: mdi:server
+      show_in_sidebar: true
+      filename: dashboards/ha_host_dashboard.yaml
+
+# Mygtuko navigation_path: /ha-host-dashboard/ha-pc

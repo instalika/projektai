@@ -1,0 +1,13 @@
+# Įklijuokite šią kortelę į Apžvalgos skydelį (redaguoti skydelį → pridėti kortelę → YAML režimas)
+
+type: button
+name: HA Serveris PC
+icon: mdi:server-network
+show_state: true
+entity: sensor.ha_host_busena_santrauka
+tap_action:
+  action: navigate
+  navigation_path: /ha-host-dashboard/ha-pc
+hold_action:
+  action: call-service
+  service: script.ha_host_atnaujinti_metrikas
