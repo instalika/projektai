@@ -8,7 +8,7 @@ command_line:
       name: "HA Host metrikos"
       unique_id: ha_host_metrics_json
       command: "bash /config/ha-host-metrics.sh json"
-      scan_interval: 30
+      scan_interval: 120
       value_template: "{{ value_json.cpu_usage | float(0) }}"
       unit_of_measurement: "%"
       json_attributes:

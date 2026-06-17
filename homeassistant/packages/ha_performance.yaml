@@ -1,0 +1,12 @@
+# =============================================================================
+# HA našumo optimizacija – mažina CPU/RAM ir DB apkrovą
+# =============================================================================
+
+homeassistant:
+  customize:
+    sensor.mikrotik_cpu:
+      scan_interval: 300
+    sensor.mikrotik_ram_naudojimas:
+      scan_interval: 300
+    sensor.mikrotik_ram_total:
+      scan_interval: 300
