@@ -49,15 +49,19 @@ python -m apsa_power --web
 
 Jei kompiuteris pats išsijungia (pvz. `192.168.0.97`) ir reikia vėl įjungti rankiniu būdu – **Instalika Power jo neišjungia** (tik WoL įjungimas). Žiūrėkite [išjungimo diagnostiką](docs/issijungimo-diagnostika.md) ir paleiskite `scripts/diagnose-shutdown.ps1` ant Windows PC.
 
-## Temperatūros ir kompiuterio būsena
+## Home Assistant serveris (192.168.0.97)
 
-BIOS duomenis ir temperatūras galima nuskaityti **tik ant pačio PC** (ne iš debesies):
+Jei **HA serveris** išsijungia ir reikia vėl įjungti rankiniu būdu:
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\hardware-status.ps1
+```bash
+# Iš LAN (telefonas/PC tame pačiame tinkle):
+bash scripts/ha-remote-probe.sh 192.168.0.97
+
+# Ant serverio (SSH):
+bash scripts/ha-server-diagnose.sh
 ```
 
-Detalės: [kompiuterio būsena](docs/kompiuterio-busena.md)
+Pilnos išvados: [HA serverio diagnostika](docs/ha-serveris-192.168.0.97.md)
 
 ---
 
