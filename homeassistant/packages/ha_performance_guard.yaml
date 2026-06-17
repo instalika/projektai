@@ -1,0 +1,140 @@
+# =============================================================================
+# Ilgalaikė našumo apsauga – automatiškai palaiko optimizaciją
+# =============================================================================
+
+shell_command:
+  # Veikia jei HA core turi prieigą prie /addon_configs (dažniausiai per SSH diegimą)
+  frigate_optimize_local: python3 /config/scripts/frigate-optimize-local.py --quiet
+
+script:
+  performance_guard_voice_addons_stop:
+    alias: "Našumas – sustabdyti balso addonus"
+    mode: parallel
+    max: 10
+    sequence:
+      - repeat:
+          for_each:
+            - core_whisper
+            - core_piper
+            - core_openwakeword
+          sequence:
+            - service: hassio.addon_stop
+              data:
+                addon: "{{ repeat.item }}"
+              continue_on_error: true
+
+  performance_guard_frigate_optimize:
+    alias: "Našumas – Frigate optimizacija ir perkrovimas"
+    mode: single
+    sequence:
+      - service: shell_command.frigate_optimize_local
+        continue_on_error: true
+      - delay:
+          seconds: 5
+      - service: hassio.addon_restart
+        data:
+          addon: ccab4aaf_frigate
+        continue_on_error: true
+
+  performance_guard_safe_reload:
+    alias: "Našumas – saugus konfigūracijos perkrovimas"
+    mode: single
+    sequence:
+      - service: homeassistant.reload_core_config
+      - delay:
+          seconds: 3
+      - service: template.reload
+      - service: modbus.reload
+
+automation:
+  - id: performance_guard_voice_on_start
+    alias: "Našumas – balso addonai išjungti po paleidimo"
+    description: "Whisper/Piper/openWakeWord krauna CPU; laikomi sustabdyti."
+    mode: single
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay:
+          minutes: 3
+      - service: script.performance_guard_voice_addons_stop
+
+  - id: performance_guard_voice_periodic
+    alias: "Našumas – balso addonai tikrinami kas 4 val"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        hours: "/4"
+    action:
+      - service: script.performance_guard_voice_addons_stop
+
+  - id: performance_guard_frigate_weekly
+    alias: "Našumas – Frigate perkrovimas kas savaitę"
+    description: "Perkrauna Frigate su diske esančia optimizuota config."
+    mode: single
+    trigger:
+      - platform: time
+        at: "04:15:00"
+    condition:
+      - condition: time
+        weekday:
+          - sun
+    action:
+      - service: script.performance_guard_frigate_optimize
+
+  - id: performance_guard_frigate_after_boot
+    alias: "Našumas – Frigate perkrovimas po HA paleidimo"
+    mode: single
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay:
+          minutes: 10
+      - service: hassio.addon_restart
+        data:
+          addon: ccab4aaf_frigate
+        continue_on_error: true
+
+  - id: performance_guard_high_cpu_frigate
+    alias: "Našumas – Frigate perkrovimas kai CPU aukštas"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ha_host_cpu_naudojimas
+        above: 90
+        for:
+          minutes: 10
+    action:
+      - service: script.performance_guard_frigate_optimize
+
+  - id: performance_guard_high_cpu_warning
+    alias: "Našumas – įspėjimas dėl aukšto CPU"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.ha_host_cpu_naudojimas
+        above: 85
+        for:
+          minutes: 15
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "HA serveris – aukštas CPU"
+          message: >
+            CPU {{ states('sensor.ha_host_cpu_naudojimas') | round(0) }}% jau 15 min.
+            Uždarykite live kameras. Jei nepraeina – paleiskite Terminal:
+            curl -fsSL .../install-ha-permanent-fix.sh | bash
+          notification_id: ha_high_cpu_warning
+
+  - id: performance_guard_recorder_purge
+    alias: "Našumas – recorder valymas kasdien"
+    mode: single
+    trigger:
+      - platform: time
+        at: "03:30:00"
+    action:
+      - service: recorder.purge
+        data:
+          keep_days: 5
+        continue_on_error: true

@@ -121,8 +121,8 @@ def optimize_config(cfg: str) -> str:
         )
 
     # --- Komentaras ---
-    if "# Optimizuota" not in cfg:
-        cfg = "# Optimizuota: CPU mažiau, judesio įrašymas (motion 3d) išliko\n" + cfg
+    if "# Optimizuota (instalika)" not in cfg:
+        cfg = "# Optimizuota (instalika): CPU mažiau, judesio įrašymas (motion 3d) išliko\n" + cfg
 
     if cfg == orig:
         print("  (jau optimizuota arba pakeitimų nereikia)")
