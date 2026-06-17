@@ -6,9 +6,12 @@
 
 | Tikrinimas | Rezultatas |
 |------------|------------|
-| Ping `192.168.0.97` | **Nepasiekiamas** (privatus LAN – debesis neturi prieigos) |
-| HA web `:8123` | **Timeout** – serveris offline arba už NAT/firewall |
-| HA API | **Neprieinama** |
+| DNS `192.168.0.97` | **`ip-192-168-0-97.ec2.internal`** – tai AWS vidinis adresas, NE jūsų namų HA |
+| Ping | Neatsako (ICMP blokuojamas) |
+| Prievadai 8123, 22, 4357 | TCP prisijungia, bet **Connection reset** – klaidingas debesies atsakas |
+| HA API / web | **Neprieinama** (tikras serveris nepasiektas) |
+
+> **Išvada:** iš Cursor debesies **negalima** tikrinti jūsų namų HA serverio. Visi „atviri" prievadai – klaidingi (debesies tinklas). Diagnostiką paleiskite **iš namų Wi-Fi**.
 
 > **Išvada:** iš Cursor debesies negalima tiesiogiai nuskaityti jūsų HA serverio. Diagnostiką reikia paleisti **iš jūsų tinklo** arba **ant paties serverio**.
 
