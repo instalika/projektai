@@ -1,126 +1,50 @@
-# APSA Power Instalika
+# Instalika Power
 
 **Kompiuterių įjungimas per LAN** – Wake-on-LAN (WoL) įrankis nuo **Instalika**.
 
-Siunčia magic packet UDP paketą į kompiuterio MAC adresą ir nuotoliniu būdu įjungia sistemą.
+| Platforma | Kaip paleisti |
+|-----------|---------------|
+| **Android** | Atidarykite `android/` Android Studio → Run |
+| **Web panelė** | `apsa-power.bat` arba `python -m apsa_power --web` |
+| **Komandinė eilutė** | `python -m apsa_power biuro-pc` |
 
-```
-  [Valdymo PC]  ──UDP magic packet──►  [Tinklo plokštė]  ──►  [Kompiuteris įsijungia]
-```
+## Android (Instalika Power v1.1)
 
-## Greitas startas
-
-### Web valdymo panelė (rekomenduojama)
-
-**Windows:** dukart spustelėkite `apsa-power.bat`
-
-**Linux / macOS:**
-```bash
-chmod +x apsa-power.sh
-./apsa-power.sh
-```
-
-Atidarykite naršyklėje: **http://localhost:8080**
-
-### Android programėlė
-
-1. Atidarykite `android/` aplanką **Android Studio**
-2. Paleiskite ant telefono arba emuliatoriaus
-3. Pridėkite kompiuterius ir spauskite **Įjungti**
+- Įjungti vieną ar **visus** kompiuterius
+- Magic packet **pakartojimai** (patikimumui)
+- Auto **broadcast** iš Wi-Fi
+- **Importas/eksportas** JSON
 
 Detalės: [android/README.md](android/README.md)
 
-### Komandinė eilutė
+## PC greitas startas
 
 ```bash
-# Įjungti pagal MAC
-python -m apsa_power AA:BB:CC:DD:EE:FF
-
-# Įjungti pagal vardą iš sąrašo
-python -m apsa_power biuro-pc
-
-# Parodyti kompiuterių sąrašą
-python -m apsa_power --list
+cp computers.json.example computers.json
+python -m apsa_power --web
+# http://localhost:8080
 ```
 
-## Diegimas
-
-1. Atsisiųskite arba klonuokite repozitoriją
-2. Reikalingas **Python 3.10+** (papildomų bibliotekų nereikia)
-3. Nukopijuokite konfigūraciją:
-   ```bash
-   cp computers.json.example computers.json
-   ```
-4. Redaguokite `computers.json` – įrašykite tikrus MAC adresus
-
 ## Kompiuterių konfigūracija
-
-`computers.json` pavyzdys:
 
 ```json
 {
   "biuro-pc": {
     "mac": "AA:BB:CC:DD:EE:FF",
-    "description": "Biuro stacionarus kompiuteris",
-    "broadcast": "192.168.1.255"
-  },
-  "namu-serveris": {
-    "mac": "11:22:33:44:55:66",
-    "description": "Namų NAS serveris",
-    "broadcast": "192.168.1.255"
+    "broadcast": "192.168.1.255",
+    "description": "Biuro PC"
   }
 }
 ```
 
-## Reikalavimai tiksliniam kompiuteriui
+## PC reikalavimai
 
 | Nustatymas | Kur |
 |------------|-----|
-| Wake on LAN / Power On By PCI-E | BIOS / UEFI |
-| Wake on Magic Packet | Tinklo plokštės tvarkyklė (Windows: Įrenginių tvarkyklė) |
-| Laidinis Ethernet | Wi-Fi dažniausiai nepalaiko pilno WoL |
-| Prijungtas prie elektros | Soft-off režimas (ne iš rozetės) |
-
-## Kaip sužinoti MAC adresą
-
-- **Windows:** `ipconfig /all` → Physical Address
-- **Linux:** `ip link` arba `ip a`
-- **Maršrutizatorius:** DHCP klientų sąrašas
-
-## Visos komandos
-
-| Komanda | Aprašymas |
-|---------|-----------|
-| `python -m apsa_power --web` | Web valdymo panelė |
-| `python -m apsa_power --list` | Kompiuterių sąrašas |
-| `python -m apsa_power -b 192.168.1.255 MAC` | Subnet broadcast |
-| `python -m apsa_power --web --host 0.0.0.0` | Panelė visam tinklui |
-
-## Įjungimas iš kito tinklo
-
-WoL veikia toje pačioje subnet. Iš interneto:
-- VPN į namų tinklą, tada naudokite kaip įprastai
-- Maršrutizatoriaus port forwarding UDP 9 → broadcast adresas
-- Kai kurie maršrutizatoriai turi integruotą WoL
-
-## Programinis naudojimas
-
-```python
-from apsa_power import wake
-
-wake("AA:BB:CC:DD:EE:FF", ip_address="192.168.1.255")
-```
-
-## Failų struktūra
-
-```
-apsa_power/          # Python paketas (PC / serveris)
-android/             # Android programėlė (Kotlin + Compose)
-apsa-power.bat       # Windows paleidimas
-apsa-power.sh        # Linux paleidimas
-computers.json       # Jūsų kompiuterių sąrašas
-```
+| Wake on LAN | BIOS |
+| Wake on Magic Packet | Tinklo plokštė |
+| Ethernet laidas | Wi-Fi PC nepalaiko WoL |
 
 ---
 
-**APSA Power Instalika** v1.0 – IT sprendimai
+**Instalika Power** – IT sprendimai | instalika.eu

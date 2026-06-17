@@ -1,7 +1,7 @@
-"""APSA Power Instalika – kompiuterių įjungimas per LAN."""
+"""Instalika Power – kompiuterių įjungimas per LAN."""
 
-__version__ = "1.0.0"
-__app_name__ = "APSA Power Instalika"
+__version__ = "1.1.0"
+__app_name__ = "Instalika Power"
 
 from apsa_power.wake import send_magic_packet, wake
 
