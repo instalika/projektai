@@ -1,41 +1,43 @@
 # Kaip paleisti diagnostiką ant HA serverio
 
-Cursor agentas **negali prisijungti** prie `192.168.0.97` iš debesies – nėra SSH rakto, HA token ir namų tinklo prieigos.
+## Su jūsų HA token (API)
 
-## Vienas veiksmas (nukopijuokite į HA SSH)
+Cursor **negali pasiekti** `192.168.0.97` iš debesies (net su token). Token bandytas – `Connection reset`.
 
-Prisijunkite prie HA serverio:
-- **HA OS:** Settings → Add-ons → **Terminal & SSH** → atidarykite terminalą
-- Arba: `ssh root@192.168.0.97` (slaptažodis iš HA)
+### Variantas A – Nabu Casa (nuotolinis URL)
 
-Tada įklijuokite **vieną eilutę**:
+Jei turite **Nabu Casa**, nustatykite URL ir paleiskite **iš savo PC**:
+
+```bash
+export HA_URL="https://JUSU-ADRESAS.ui.nabu.casa"
+export HA_TOKEN="jūsų-long-lived-token"
+python3 scripts/ha-api-diagnose.py
+```
+
+Nabu Casa URL: HA → Settings → Home Assistant Cloud → Remote access.
+
+### Variantas B – tas pats Wi-Fi (PC/telefonas)
+
+```bash
+export HA_URL="http://192.168.0.97:8123"
+export HA_TOKEN="jūsų-token"
+python3 scripts/ha-api-diagnose.py
+```
+
+### Variantas C – SSH ant serverio
 
 ```bash
 curl -fsSL "https://raw.githubusercontent.com/instalika/projektai/cursor/shutdown-diagnostics-3ac6/scripts/ha-run-now.sh" | bash
 ```
 
-Skriptas automatiškai:
-1. Nuskaito temperatūras, RAM, diską
-2. Ieško OOM / reboot logų
-3. Tikrina HA automacijas (`shutdown`, `reboot`)
-4. Išveda išvadas lietuviškai
-5. (Jei įmanoma) sugeneruoja nuorodą ataskaitai pasidalinti
-
 ---
 
-## Alternatyva – jei turite repo
+## Saugumas
 
-```bash
-cd /config  # arba kur klonavote
-bash scripts/ha-run-now.sh
-```
+**Niekada nedėkite token į viešą chat ar GitHub.** Jei jau pateikėte – HA → Profilis → Long-Lived Access Tokens → **ištrinkite** ir sukurkite naują.
 
 ---
 
 ## Ką atsiųsti atgal
 
-Po paleidimo nukopijuokite:
-- terminalo išvestį nuo `SANTRAUKA`
-- arba nuorodą `transfer.sh/...` jei rodo
-
-Tada galima tiksliai pasakyti kas išjungia serverį.
+Paleidus `ha-api-diagnose.py`, nukopijuokite visą terminalo išvestį – tada galima tiksliai pasakyti kas vyksta.
