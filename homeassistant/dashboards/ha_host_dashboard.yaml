@@ -1,0 +1,121 @@
+# Lovelace skydelis – importuokite per Nustatymai → Skydeliai → Pridėti → Importuoti
+# Arba įklijuokite mygtuką į Apžvalgą (žr. docs)
+
+title: HA Serveris
+views:
+  - title: PC momentiniai
+    path: ha-pc
+    icon: mdi:server
+    badges:
+      - entity: sensor.ha_host_ip
+      - entity: binary_sensor.ha_host_perkaitimas
+      - entity: binary_sensor.ha_host_ram_kritine
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## HA serveris {{ states('sensor.ha_host_ip') }}
+              **{{ states('sensor.ha_host_busena_santrauka') }}**
+              Veikia: **{{ states('sensor.ha_host_veikimo_laikas') }}** h
+
+          - type: glance
+            entities:
+              - entity: sensor.ha_host_cpu_naudojimas
+                name: CPU
+              - entity: sensor.ha_host_ram_naudojimas
+                name: RAM
+              - entity: sensor.ha_host_cpu_temperatura
+                name: Temp
+              - entity: sensor.ha_host_ventiliatorius_rpm
+                name: Vent.
+              - entity: sensor.ha_host_disk_naudojimas
+                name: Diskas
+
+          - type: gauge
+            entity: sensor.ha_host_cpu_naudojimas
+            name: CPU naudojimas
+            min: 0
+            max: 100
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+
+          - type: gauge
+            entity: sensor.ha_host_ram_naudojimas
+            name: RAM naudojimas
+            min: 0
+            max: 100
+            severity:
+              green: 0
+              yellow: 70
+              red: 90
+
+          - type: gauge
+            entity: sensor.ha_host_cpu_temperatura
+            name: CPU temperatūra
+            min: 20
+            max: 100
+            severity:
+              green: 20
+              yellow: 70
+              red: 85
+
+          - type: entities
+            title: Detalūs duomenys
+            show_header_toggle: false
+            entities:
+              - entity: sensor.ha_host_cpu_naudojimas
+              - entity: sensor.ha_host_cpu_temperatura
+              - entity: sensor.ha_host_ram_naudojimas
+              - entity: sensor.ha_host_ram_naudota
+              - entity: sensor.ha_host_ram_viso
+              - entity: sensor.ha_host_disk_naudojimas
+              - entity: sensor.ha_host_disk_laisva
+              - entity: sensor.ha_host_disk_viso
+              - entity: sensor.ha_host_apkrova_1min
+              - entity: sensor.ha_host_apkrova_5min
+              - entity: sensor.ha_host_veikimo_laikas
+              - entity: sensor.ha_host_ventiliatorius_rpm
+              - entity: sensor.ha_host_ip
+
+          - type: button
+            name: Atnaujinti dabar
+            icon: mdi:refresh
+            tap_action:
+              action: call-service
+              service: script.ha_host_atnaujinti_metrikas
+
+      - type: statistics-graph
+        title: CPU ir RAM (7 d.)
+        entities:
+          - sensor.ha_host_cpu_naudojimas
+          - sensor.ha_host_ram_naudojimas
+        stat_types:
+          - mean
+          - min
+          - max
+        chart_type: line
+        period: hour
+        days_to_show: 7
+
+      - type: statistics-graph
+        title: Temperatūra (7 d.)
+        entities:
+          - sensor.ha_host_cpu_temperatura
+        stat_types:
+          - mean
+          - max
+        chart_type: line
+        period: hour
+        days_to_show: 7
+
+      - type: history-graph
+        title: Momentinė istorija (24 h)
+        hours_to_show: 24
+        entities:
+          - sensor.ha_host_cpu_naudojimas
+          - sensor.ha_host_ram_naudojimas
+          - sensor.ha_host_cpu_temperatura
+          - sensor.ha_host_disk_naudojimas
