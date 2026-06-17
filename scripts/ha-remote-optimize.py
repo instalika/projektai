@@ -314,25 +314,25 @@ async def main_async() -> int:
 
     await ws.close()
 
-    print("\n→ Perkraunama...")
+    print("\n→ Perkraunama (tik reload, be restart)...")
     try:
         call_service("homeassistant", "reload_core_config")
+        call_service("template", "reload")
         time.sleep(3)
-        call_service("recorder", "purge", {"keep_days": 5, "repack": True})
+        call_service("modbus", "reload")
+        call_service("recorder", "purge", {"keep_days": 5})
     except Exception as e:
         print(f"  {e}")
+    print("  Pilnas homeassistant.restart išjungtas – žr. docs/ha-safe-commands.md")
 
-    print("\n→ Pilnas restart...")
+    print("\n→ Laukiam 30s...")
+    time.sleep(30)
     try:
-        call_service("homeassistant", "restart")
-    except Exception:
-        pass
-
-    print("\n→ Laukiam 150s...")
-    time.sleep(150)
-    wait_online(420)
-    print("\n=== Po optimizacijos ===")
-    verify_metrics()
+        wait_online(120)
+        print("\n=== Po optimizacijos ===")
+        verify_metrics()
+    except Exception as e:
+        print(f"Patikra: {e}")
     print(f"\nSantrauka: integracijų={n_int}, image={n_img}, update={n_upd}")
     return 0
 

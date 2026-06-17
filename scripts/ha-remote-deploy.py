@@ -234,15 +234,16 @@ def patch_ui_lovelace(ui: str) -> str:
     return ui
 
 
-def restart_ha() -> None:
-    req = urllib.request.Request(
-        f"{HA_URL}/api/services/homeassistant/restart",
-        data=b"{}",
-        headers={"Authorization": f"Bearer {HA_TOKEN}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=30, context=CTX) as r:
-        print(f"  HA restart: HTTP {r.status}")
+def reload_ha_soft() -> None:
+    """Tik programinė perkrova – NIEKADA ne host shutdown/reboot."""
+    for domain, service in (
+        ("homeassistant", "reload_core_config"),
+        ("template", "reload"),
+    ):
+        try:
+            call_service(domain, service)
+        except Exception as e:
+            print(f"  {domain}.{service}: {e}")
 
 
 def verify_sensors() -> None:
@@ -283,18 +284,17 @@ def main() -> int:
     upload(ingress, session, "ui-lovelace.yaml", ui)
     print("  Uploaded: ui-lovelace.yaml")
 
-    print("\n→ Perkraunamas šablonų ir pagrindinės konfigūracijos...")
+    print("\n→ Perkraunama konfigūracija (be pilno restart)...")
     try:
         call_service("template", "reload")
         call_service("homeassistant", "reload_core_config")
     except Exception as e:
-        print(f"  Dalinė perkrova nepavyko ({e}) – daromas pilnas restart")
+        print(f"  Dalinė perkrova: {e}")
+    print("  (Pilnas homeassistant.restart NENAUDOJAMAS – saugumo sumetimais)")
 
-    print("\n→ Perkraunamas Home Assistant...")
-    restart_ha()
-    print("\n→ Laukiam 90s...")
+    print("\n→ Laukiam 30s...")
     import time
-    time.sleep(90)
+    time.sleep(30)
 
     print("\n=== Patikra ===")
     try:

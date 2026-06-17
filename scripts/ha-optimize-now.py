@@ -225,27 +225,24 @@ def main() -> int:
         stats = {"integrations": 0, "image": 0, "update": 0}
         print("  entitetų išjungimas praleistas (serveris per apkrautas)")
 
-    print("Perkraunama...")
+    print("Perkraunama (tik reload)...")
     retry("reload_core_config", lambda: api_post("homeassistant", "reload_core_config"))
     time.sleep(4)
     try:
+        api_post("template", "reload")
         api_post("modbus", "reload")
     except Exception:
         pass
+    # recorder.purge be repack – repack apkrauna diską ir gali „užmigdyti“ serverį
     try:
-        api_post("recorder", "purge", {"keep_days": 5, "repack": True})
-        print("recorder.purge: OK")
+        api_post("recorder", "purge", {"keep_days": 5})
+        print("recorder.purge: OK (be repack)")
     except Exception as e:
         print(f"recorder.purge: {e}")
 
-    try:
-        api_post("homeassistant", "restart")
-        print("restart: OK")
-    except Exception:
-        print("restart: inicijuotas")
-
-    print("Laukiama 120s...")
-    time.sleep(120)
+    print("  homeassistant.restart NENAUDOJAMAS (saugumo sumetimais)")
+    print("Laukiama 30s...")
+    time.sleep(30)
 
     def metrics():
         s = api_get("/api/states/sensor.ha_host_metrikos")
