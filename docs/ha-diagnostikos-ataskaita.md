@@ -22,10 +22,9 @@
 
 | Parametras | Reikšmė |
 |------------|---------|
-| **Tikras IP** (pagal HA) | `192.168.0.25` (ne 192.168.0.97) |
-| **MAC** | `C0:49:EF:CF:A1:7C` |
-| **Hostname** | espressif |
-| **Maitinimas (Sonoff)** | 34.34 W, 0.23 A, 231 V |
+| **HA serverio IP** | `192.168.0.97` (patvirtinta naudotojo – HA pats savęs netrackingina) |
+| **„SERVERIS" 192.168.0.25** | Atskiras **ESP** įrenginys (ne HA serveris) – klaidingai identifikuotas anksčiau |
+| **Sonoff SERVERIS kištukas** | Maitina ESP modulį, ne būtinai HA kompiuterį |
 | **Diskas laisva** | 1530.9 GB |
 | **Entitetės** | 2476 (424 unavailable) |
 
@@ -62,8 +61,8 @@
 
 ## Rekomendacijos
 
-1. **WoL serveriui** – pridėti MAC `C0:49:EF:CF:A1:7C` (IP `192.168.0.25`)
-2. **Nejungti HA per Sonoff SERVERIS** – naudoti tik stebėsenai
+1. **WoL HA serveriui** – reikia MAC adreso iš routerio ar BIOS (`192.168.0.97`)
+2. **„SERVERIS" Sonoff/ESP (.25)** – tai atskiras įrenginys, ne HA host
 3. **Įjungti HA OS host metrics** – CPU, RAM, temperatūra
 4. **Patikrinti Supervisor logus** po 11:12 perkrovimo šiandien
 5. **Atnaujinti token** – buvo paviešintas pokalbyje
