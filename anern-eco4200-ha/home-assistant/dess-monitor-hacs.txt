@@ -1,0 +1,18 @@
+# DESS Monitor (debesis) — HACS diegimas Anern ECO-4200
+#
+# 1. Home Assistant -> HACS -> Integrations -> Custom repositories
+#    URL: https://github.com/Antoxa1081/home-assistant-dess-monitor
+#    Kategorija: Integration
+#
+# 2. HACS -> DESS Monitor -> Download -> Restart Home Assistant
+#
+# 3. Settings -> Devices & Services -> Add Integration -> DESS Monitor
+#
+# 4. Prisijunkite tomis paciomis SmartESS / dessmonitor.com paskyros duomenimis
+#
+# 5. Inverteris ECO-4200 Anern turetu pasirodyti automatiskai
+#    Protokolai: devcode 2428 arba 2341 (patikrinta su Anern + Wi-Fi Plug Pro)
+#
+# Nustatymai (rekomenduojama):
+# - Update interval: 5 min (standartas) arba 10 s su "direct data request"
+# - Company Key: palikite default, nebent diegejas gave kita
