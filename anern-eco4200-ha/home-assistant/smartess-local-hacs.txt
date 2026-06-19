@@ -1,0 +1,20 @@
+# SmartESS Local (LAN, be debesies) — HACS diegimas Anern ECO-4200
+#
+# Reikalavimai:
+# - Home Assistant ir Wi-Fi Plug Pro tame paciame LAN
+# - Wi-Fi Plug Pro turi veikti (4 LED degantys SmartESS konfiguracijoje)
+#
+# 1. Home Assistant -> HACS -> Custom repositories
+#    URL: https://github.com/ubombi/ha-smartess-local
+#    Kategorija: Integration
+#
+# 2. HACS -> SmartESS Local -> Download -> Restart Home Assistant
+#
+# 3. Settings -> Devices & Services -> Add Integration -> SmartESS Local
+#
+# 4. Palaukite ~60 s — loggeris prisijungs per TCP 8899 / UDP 58899
+#
+# Jei neprisijungia:
+# - Paleiskite find-smartess-inverter.ps1 arba .sh ir patikrinkite IP
+# - Routeryje rezervuokite statini IP Wi-Fi Plug Pro
+# - HA ir loggeris turi buti tame paciame potinkyje (be VLAN izoliacijos)
